@@ -1,5 +1,4 @@
 streamlit
 pandas
-duckdb
+sqlite3
 google-generativeai
-python-dotenv
