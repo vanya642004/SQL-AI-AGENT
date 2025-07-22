@@ -1,17 +1,18 @@
 import streamlit as st
 from db_loader import load_data
 from text2sql_agent import generate_sql
+import os
 
-st.set_page_config(page_title="Text2SQL CSV Agent", page_icon="🧠")
+st.set_page_config(page_title="📊 Text2SQL with Gemini", page_icon="🧠")
 
-st.title("🧠 Text2SQL Agent for E-commerce CSV Data")
+st.title("🧠 Text2SQL Agent with Gemini (CSV to SQL)")
 
-query = st.text_input("Ask your question in plain English:")
+query = st.text_input("Ask your question:")
 
 if query:
     sql = generate_sql(query)
-    st.subheader("🔄 Generated SQL")
-    st.code(sql, language='sql')
+    st.subheader("🔍 Generated SQL")
+    st.code(sql, language="sql")
 
     con = load_data()
 
@@ -21,13 +22,8 @@ if query:
         if result.empty:
             st.warning("No results found.")
         else:
-            st.subheader("✅ Answer")
+            st.subheader("✅ Result")
             st.dataframe(result)
-
-            if len(result.columns) == 1:
-                st.success(f"{result.columns[0]}: {result.iloc[0, 0]}")
-            elif result.shape == (1, 2):
-                st.success(f"{result.columns[0]}: {result.iloc[0, 0]}, {result.columns[1]}: {result.iloc[0, 1]}")
 
     except Exception as e:
         st.error(f"❌ SQL Error: {e}")
