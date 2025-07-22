@@ -1,23 +1,22 @@
 import streamlit as st
-from db_loader import load_all_csvs
+import sqlite3
+import pandas as pd
 from text2sql_agent import generate_sql
 
-st.set_page_config(page_title="CSV Text2SQL Agent", page_icon="🧠")
-st.title("🧠 Text2SQL Agent for E-commerce CSVs")
-st.write("Ask questions about your data in plain English.")
+# Connect to SQLite DB
+db_path = "ecom.db"
+conn = sqlite3.connect(db_path)
+cursor = conn.cursor()
 
-query = st.text_input("Ask your question:")
+st.title("🧠 Text2SQL E-commerce Agent")
 
-if query:
-    st.write(f"🔎 Interpreting: **{query}**")
+query = st.text_input("Ask a question about your sales data:")
+
+if st.button("Generate Answer") and query:
     sql = generate_sql(query)
-    st.code(sql, language="sql")
-
+    st.markdown(f"**Generated SQL:** `{sql}`")
     try:
-        conn = load_all_csvs()
-        result = conn.execute(sql).fetchall()
-        columns = [desc[0] for desc in conn.execute(sql).description]
-        st.success("✅ Query executed successfully!")
-        st.dataframe(result, use_container_width=True)
+        result = pd.read_sql_query(sql, conn)
+        st.dataframe(result)
     except Exception as e:
-        st.error(f"❌ SQL Execution Error: {e}")
+        st.error(f"Error running SQL: {e}")
