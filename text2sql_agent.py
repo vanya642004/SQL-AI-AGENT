@@ -1,18 +1,10 @@
-import os
 import google.generativeai as genai
+import os
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-def generate_sql(query):
-    model = genai.GenerativeModel("gemini-pro")  # ✅ Use full path
-    prompt = f"""
-    Convert this natural language query to a SQL query.
-    Available tables: ad_sales, total_sales, eligibility.
+model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
 
-    Query: {query}
-    """
-    try:
-        response = model.generate_content(prompt)
-        return response.text.strip()
-    except Exception as e:
-        return f"-- Gemini API Error: {e}"
+def generate_sql(prompt):
+    response = model.generate_content(prompt)
+    return response.text
