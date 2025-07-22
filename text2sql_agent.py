@@ -1,17 +1,10 @@
-import google.generativeai as genai
+from transformers import pipeline
 import os
-import sqlite3
 
+hf_token = os.getenv("HF_API_KEY")
+text2sql = pipeline("text2text-generation", model="tscholak/opt-text2sql-finetuned", tokenizer="tscholak/opt-text2sql-finetuned", use_auth_token=hf_token)
 
-# Add your API key
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
-# Replace with a supported model
-model = genai.GenerativeModel("gemini-1.5-pro-latest")  # safe and supported
-
-def generate_sql(prompt):
-    try:
-        response = model.generate_content(prompt)
-        return response.text
-    except Exception as e:
-        return f"-- Gemini API Error: {e}"
+def generate_sql(query):
+    prompt = f"Translate this natural language question into SQL: {query}"
+    output = text2sql(prompt, max_length=256, do_sample=False)
+    return output[0]['generated_text']
