@@ -1,8 +1,14 @@
-def load_all_csvs():
-    conn = sqlite3.connect(":memory:")
+import sqlite3
+import pandas as pd
 
-    pd.read_csv("ecommerce_sql_agent/ad_sales.csv").to_sql("ad_sales", conn, index=False, if_exists="replace")
-    pd.read_csv("ecommerce_sql_agent/total_sales.csv").to_sql("total_sales", conn, index=False, if_exists="replace")
-    pd.read_csv("ecommerce_sql_agent/eligibility.csv").to_sql("eligibility", conn, index=False, if_exists="replace")
+# Load CSVs
+total_sales = pd.read_csv("ecommerce/total_sales.csv")
+ad_sales = pd.read_csv("ecommerce/ad_sales.csv")
+eligibility = pd.read_csv("ecommerce/eligibility.csv")
 
-    return conn
+# Save to SQLite
+conn = sqlite3.connect("ecom.db")
+total_sales.to_sql("total_sales", conn, if_exists="replace", index=False)
+ad_sales.to_sql("ad_sales", conn, if_exists="replace", index=False)
+eligibility.to_sql("eligibility", conn, if_exists="replace", index=False)
+conn.close()
