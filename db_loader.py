@@ -1,6 +1,3 @@
-import pandas as pd
-import sqlite3
-
 def load_all_csvs():
     conn = sqlite3.connect(":memory:")
 
