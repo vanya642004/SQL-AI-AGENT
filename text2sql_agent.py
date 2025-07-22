@@ -1,7 +1,9 @@
 from transformers import pipeline
 
-# Load a lightweight Text2SQL model from Hugging Face
-generator = pipeline("text2text-generation", model="tscholak/opt-1.3b-sql")
+generator = pipeline(
+    "text2text-generation", 
+    model="nsi319/legal-text-to-sql-t5-small"
+)
 
 def generate_sql(query):
     prompt = f"Translate to SQL: {query}"
