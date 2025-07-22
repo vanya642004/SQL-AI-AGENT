@@ -1,11 +1,23 @@
-from transformers import pipeline
+import google.generativeai as genai
+import os
 
-generator = pipeline(
-    "text2text-generation", 
-    model="nsi319/legal-text-to-sql-t5-small"
-)
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel("gemini-pro")
 
-def generate_sql(query):
-    prompt = f"Translate to SQL: {query}"
-    result = generator(prompt, max_length=256, do_sample=False)
-    return result[0]['generated_text']
+def generate_sql(user_query):
+    prompt = f"""
+You are an expert in converting natural language to SQL queries.
+Generate a DuckDB SQL query based on this question:
+
+Tables:
+- ad_sales(item_id, ad_sales, impressions, ad_spend, clicks, units_sold, date)
+- total_sales(item_id, total_sales, total_units_ordered, date)
+- eligibility(item_id, eligibility, message, eligibility_datetime_utc)
+
+Natural language: {user_query}
+
+SQL:
+"""
+    response = model.generate_content(prompt)
+    return response.text.strip()
+
